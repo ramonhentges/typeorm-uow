@@ -1,0 +1,25 @@
+services:
+  db-test:
+    image: postgres
+    environment:
+      POSTGRES_USER: 'postgres'
+      POSTGRES_PASSWORD: 'postgres'
+      POSTGRES_DB: 'uow'
+      PGDATA: /var/lib/postgresql/data/pgdata
+    volumes:
+      - ./pg-data-test:/var/lib/postgresql/data
+
+  backend:
+    build:
+      context: .
+      dockerfile: 'dev.Dockerfile'
+    entrypoint: ./.docker/entrypoint.sh
+    ports:
+      - 3011:3000
+    volumes:
+      - .:/home/node/app:rw
+
+  adminer:
+    image: adminer
+    ports:
+      - 8080:8080
