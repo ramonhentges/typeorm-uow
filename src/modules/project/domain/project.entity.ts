@@ -1,14 +1,23 @@
+import { AggregateRoot } from '@/modules/core/domain/aggregate-root';
 import { randomUUID } from 'crypto';
 import { Column, Entity, PrimaryColumn } from 'typeorm';
+import { ProjectCreatedEvent } from './created-project.event';
 import { Task } from './task.entity';
 
 @Entity({ name: 'projects' })
-export class Project {
+export class Project extends AggregateRoot {
   public static create(name: string, description: string) {
     const output = new Project();
     output.projectId = randomUUID();
     output.name = name;
     output.description = description;
+    output.addEvent(
+      new ProjectCreatedEvent(
+        output.projectId,
+        output.name,
+        output.description,
+      ),
+    );
     return output;
   }
 
