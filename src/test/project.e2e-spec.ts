@@ -31,7 +31,6 @@ describe('CreateProjectController (e2e)', () => {
   });
 
   it('should save all projects and tasks', async () => {
-    const projects = await projectRepository.find();
     const input: CreateProjectInput = {
       projectName: 'New Project',
       projectDescription: 'Project description',
@@ -44,5 +43,37 @@ describe('CreateProjectController (e2e)', () => {
 
     expect(res.status).toBe(HttpStatus.CREATED);
     expect(res.body).toEqual({ projectId: expect.any(String) });
+    const projects = await projectRepository.find();
+    expect(projects).toHaveLength(1);
+    const savedProject = projects[0];
+    expect(savedProject.name).toBe(input.projectName);
+    expect(savedProject.description).toBe(input.projectDescription);
+    const tasks = await taskRepository.find({ order: { description: 'ASC' } });
+    expect(tasks).toHaveLength(2);
+    input.initialTasks.forEach((taskDto, idx) => {
+      expect(tasks[idx].description).toBe(taskDto.description);
+    });
+  });
+
+  it('should not save anything if task length exceeds the limit', async () => {
+    const input: CreateProjectInput = {
+      projectName: 'New Project',
+      projectDescription: 'Project description',
+      initialTasks: [
+        { description: 'Task A' },
+        { description: 'A'.repeat(101) },
+      ],
+    };
+
+    const res = await request(app.getHttpServer())
+      .post('/projects/create')
+      .send(input);
+
+    expect(res.status).toBe(HttpStatus.INTERNAL_SERVER_ERROR);
+
+    const projects = await projectRepository.find();
+    expect(projects).toHaveLength(0);
+    const tasks = await taskRepository.find();
+    expect(tasks).toHaveLength(0);
   });
 });

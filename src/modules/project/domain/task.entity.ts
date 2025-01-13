@@ -7,7 +7,7 @@ export class Task {
     const output = new Task();
     output.taskId = randomUUID();
     output.projectId = projectId;
-    output.description = description;
+    output.setDescription(description);
     output.status = 'open';
     return output;
   }
@@ -22,4 +22,11 @@ export class Task {
 
   @Column()
   status: string;
+
+  private setDescription(description: string) {
+    if (description.length > 100) {
+      throw new Error("Description can't have more than 100 characters");
+    }
+    this.description = description;
+  }
 }

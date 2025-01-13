@@ -17,20 +17,14 @@ export class CreateProjectUseCase
 
   async execute(input: CreateProjectInput): Promise<CreateProjectOutput> {
     const project = Project.create(input.projectName, input.projectDescription);
+
+    await this.projectRepository.add(project);
+
     const tasks = input.initialTasks.map((task) =>
       project.addTask(task.description),
     );
 
-    await this.projectRepository.add(project);
-
-    await Promise.all(
-      tasks.map((task) => {
-        if (task.description === 'throw-error') {
-          throw new Error('Error saving tasks');
-        }
-        return this.taskRepository.add(task);
-      }),
-    );
+    await Promise.all(tasks.map((task) => this.taskRepository.add(task)));
 
     return { projectId: project.projectId };
   }
