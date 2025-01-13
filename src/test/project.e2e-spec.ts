@@ -1,9 +1,8 @@
 import { Task } from '@/modules/project/domain/task.entity';
-import { ProjectModule } from '@/modules/project/project.module';
 import { CreateProjectInput } from '@/modules/project/use-cases/create-project.use-case';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { getRepositoryToken } from '@nestjs/typeorm';
+import { getDataSourceToken } from '@nestjs/typeorm';
 import * as request from 'supertest';
 import { Repository } from 'typeorm';
 import { AppModule } from '../app.module';
@@ -16,12 +15,13 @@ describe('CreateProjectController (e2e)', () => {
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [AppModule, ProjectModule],
+      imports: [AppModule],
     }).compile();
 
     app = moduleFixture.createNestApplication();
-    projectRepository = moduleFixture.get(getRepositoryToken(Project));
-    taskRepository = moduleFixture.get(getRepositoryToken(Task));
+    const dataSource = moduleFixture.get(getDataSourceToken());
+    projectRepository = dataSource.getRepository(Project);
+    taskRepository = dataSource.getRepository(Task);
     await app.init();
   });
 

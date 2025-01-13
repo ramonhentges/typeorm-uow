@@ -1,16 +1,18 @@
+import { UnitOfWork } from '@/modules/core/unit-of-work';
 import { Project } from '@/modules/project/domain/project.entity';
 import { ProjectRepository } from '@/modules/project/domain/project.repository';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Injectable } from '@nestjs/common';
 
+@Injectable()
 export class TypeormProjectRepository implements ProjectRepository {
-  constructor(
-    @InjectRepository(Project)
-    private projectRepository: Repository<Project>,
-  ) {}
+  constructor(private readonly uow: UnitOfWork) {}
+
+  private projectRepository() {
+    return this.uow.manager.getRepository(Project);
+  }
 
   async add(project: Project) {
-    await this.projectRepository.insert(project);
+    await this.projectRepository().insert(project);
     return project;
   }
 }
