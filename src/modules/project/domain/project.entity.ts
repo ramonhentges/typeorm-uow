@@ -1,7 +1,7 @@
 import { AggregateRoot } from '@/modules/core/domain/aggregate-root';
 import { randomUUID } from 'crypto';
 import { Column, Entity, PrimaryColumn } from 'typeorm';
-import { ProjectCreatedEvent } from './created-project.event';
+import { ProjectCreatedEvent } from './project-created.event';
 import { Task } from './task.entity';
 
 @Entity({ name: 'projects' })
