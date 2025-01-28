@@ -1,4 +1,4 @@
-import { UnitOfWork } from '@/modules/core/unit-of-work';
+import { Transactional } from '@/modules/core/decorators/transactional';
 import { Body, Controller, Post } from '@nestjs/common';
 import {
   CreateProjectInput,
@@ -7,13 +7,11 @@ import {
 
 @Controller()
 export class CreateProjectController {
-  constructor(
-    private readonly uow: UnitOfWork,
-    private readonly useCase: CreateProjectUseCase,
-  ) {}
+  constructor(private readonly useCase: CreateProjectUseCase) {}
 
   @Post('/projects/create')
+  @Transactional()
   execute(@Body() data: CreateProjectInput) {
-    return this.uow.transactional(() => this.useCase.execute(data));
+    return this.useCase.execute(data);
   }
 }

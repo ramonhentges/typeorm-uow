@@ -1,6 +1,6 @@
 import { DomainEventManager } from '@/modules/core/domain/domain-event-manager';
+import { UseCase } from '@/modules/core/domain/use-case';
 import { Inject, Injectable } from '@nestjs/common';
-import { UseCase } from 'src/common/domain/use-case';
 import { Project } from '../domain/project.entity';
 import { ProjectRepository } from '../domain/project.repository';
 import { TaskRepository } from '../domain/task.repository';

@@ -1,6 +1,6 @@
-import { IntId } from '@/common/domain/int-id.vo';
 import { AggregateRoot } from '@/modules/core/domain/aggregate-root';
 import { DomainEvent } from '@/modules/core/domain/domain-event';
+import { IntId } from '@/modules/core/domain/int-id.vo';
 import { Column, Entity, Generated, PrimaryColumn } from 'typeorm';
 
 export class StoredEventId extends IntId {}
