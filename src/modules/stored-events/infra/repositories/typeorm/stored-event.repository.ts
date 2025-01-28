@@ -11,7 +11,7 @@ export class TypeormStoredEventRepository implements StoredEventRepository {
   constructor(private readonly uow: UnitOfWork) {}
 
   private storedEventRepository() {
-    return this.uow.manager.getRepository(StoredEvent);
+    return this.uow.manager().getRepository(StoredEvent);
   }
 
   async add(storedEvent: StoredEvent) {

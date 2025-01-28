@@ -8,7 +8,7 @@ export class TypeormProjectRepository implements ProjectRepository {
   constructor(private readonly uow: UnitOfWork) {}
 
   private projectRepository() {
-    return this.uow.manager.getRepository(Project);
+    return this.uow.manager().getRepository(Project);
   }
 
   async add(project: Project) {
