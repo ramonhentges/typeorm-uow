@@ -5,6 +5,13 @@ import { Project } from '../domain/project.entity';
 import { ProjectRepository } from '../domain/project.repository';
 import { TaskRepository } from '../domain/task.repository';
 
+const sleep = () =>
+  new Promise((res) =>
+    setTimeout(() => {
+      res(undefined);
+    }, 50),
+  );
+
 @Injectable()
 export class CreateProjectUseCase
   implements UseCase<CreateProjectInput, CreateProjectOutput>
@@ -23,11 +30,15 @@ export class CreateProjectUseCase
     await this.projectRepository.add(project);
     await this.domainEventManager.publish(project);
 
+    await sleep();
+
     const tasks = input.initialTasks.map((task) =>
       project.addTask(task.description),
     );
 
     await Promise.all(tasks.map((task) => this.taskRepository.add(task)));
+
+    await sleep();
 
     return { projectId: project.projectId };
   }

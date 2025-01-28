@@ -84,4 +84,43 @@ describe('CreateProjectController (e2e)', () => {
     const storedEvents = await storedEventsRepository.find();
     expect(storedEvents).toHaveLength(0);
   });
+
+  it('should run save and not save in parallel', async () => {
+    const saveInput: CreateProjectInput = {
+      projectName: 'New Project',
+      projectDescription: 'Project description',
+      initialTasks: [{ description: 'Task A' }, { description: 'Task B' }],
+    };
+
+    const savedPromise = request(app.getHttpServer())
+      .post('/projects/create')
+      .send(saveInput);
+
+    const errorInput: CreateProjectInput = {
+      projectName: 'New Project',
+      projectDescription: 'Project description',
+      initialTasks: [
+        { description: 'Task A' },
+        { description: 'A'.repeat(101) },
+      ],
+    };
+
+    const notSavedPromise = request(app.getHttpServer())
+      .post('/projects/create')
+      .send(errorInput);
+
+    const [resSaved, resNotSaved] = await Promise.all([
+      savedPromise,
+      notSavedPromise,
+    ]);
+
+    expect(resSaved.status).toBe(HttpStatus.CREATED);
+    expect(resNotSaved.status).toBe(HttpStatus.INTERNAL_SERVER_ERROR);
+    const projects = await projectRepository.find();
+    expect(projects).toHaveLength(1);
+    const tasks = await taskRepository.find({ order: { description: 'ASC' } });
+    expect(tasks).toHaveLength(2);
+    const storedEvents = await storedEventsRepository.find();
+    expect(storedEvents).toHaveLength(1);
+  });
 });

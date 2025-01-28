@@ -1,8 +1,8 @@
-import { Injectable, Scope } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource, EntityManager } from 'typeorm';
 
-@Injectable({ scope: Scope.REQUEST })
+@Injectable()
 export class UnitOfWork {
   constructor(
     @InjectDataSource()
